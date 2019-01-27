@@ -29,8 +29,7 @@
   
 # Installation
 ```python
-    pip install rulebook
-    ```
+    pip install rulebook```
     
 # Requirements
   - Python 3.6 and above
