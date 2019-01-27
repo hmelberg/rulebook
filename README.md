@@ -38,14 +38,16 @@
   -MIT
   
 # Advanced features
-  - Add complex rule expressions (pandas expressions) ```python # All observations with the same id should also have the same gender
- rules.add("df.groupby('id')['gender'].nunique()<2")```        
+  - Add complex rule expressions (pandas expressions) 
+```python 
+    # All observations with the same id should also have the same gender
+         rules.add("df.groupby('id')['gender'].nunique()<2")```        
   - Rules for revising invalid data 
-  ```python 
-  # Make all values that are invalid, missing
-      rules.add("isin('m', 'f')", cols='gender', invalid='to_missing')
-  # Check and revise the dataframe
-      revised_df = rules.check_and_revise(df)
+```python 
+    # Make all values that are invalid, missing
+        rules.add("isin('m', 'f')", cols='gender', invalid='to_missing')
+    # Check and revise the dataframe
+        revised_df = rules.check_and_revise(df)
  ```  
 
 # General structure
@@ -59,10 +61,11 @@
           Define a function that takes a dataframe (and possibly a column) and returns a series that is True or False. The name of the function can be added as a rule:
     - Pandas expressions
       - Series: rules.add("name.str.contains('Cathy')")
-      - Datafrmme:       
-      ```python
+      - Dataframe:       
+ ```python
       # For each persons age should never decrease as the date increases
-       rules.add("df.sort_values(['id', 'age']).groupby('id')['age'].is_monotonic")```
+       rules.add("df.sort_values(['id', 'age']).groupby('id')['age'].is_monotonic")
+   ```
      
  # API info
   - rules=rb.RuleBook()
