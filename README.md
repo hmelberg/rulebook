@@ -28,9 +28,7 @@
   - Visualize: Get a quick visualization of amount and type of invalid data
   
 # Installation
-```python
-    pip install rulebook
-```
+```python pip install rulebook```
     
 # Requirements
   - Python 3.6 and above
@@ -41,18 +39,16 @@
   
 # Advanced features
   - Add complex rule expressions (pandas expressions)
-      
-      # All observations with the same id should also have the same gender
- ```python rules.add("df.groupby('id')['gender'].nunique()<2")```
+ ```python # All observations with the same id should also have the same gender
+ rules.add("df.groupby('id')['gender'].nunique()<2")```
     
         
   - Rules for revising invalid data
-  ```python
-      # Make all values that are invalid, missing
+  ```python # Make all values that are invalid, missing
       rules.add("isin('m', 'f')", cols='gender', invalid='to_missing')
       # Check and revise the dataframe
       revised_df = rules.check_and_revise(df)
-      ```  
+ ```  
 
 # General structure
   - There are three types of rules that can be added:
