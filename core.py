@@ -7,10 +7,10 @@ Created on Sun Oct 14 23:31:49 2018
 
 import numpy as np
 import pandas as pd
-import re
-import snotra as sa
 import copy
 import pickle
+import re
+
 
 # %%
 

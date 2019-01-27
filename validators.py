@@ -1,7 +1,3 @@
-import re
-
-import numpy as np
-import pandas as pd
 
 
 def del_row(df, col=None, ok=None):
