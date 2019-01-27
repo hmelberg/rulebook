@@ -6,7 +6,7 @@
   - Will change, everything does not work well, use at your own risk
 
 # Usage
-    ```python
+```python
     import rulebook as rb
     
     # create a rulebook
@@ -18,7 +18,7 @@
     
     # check the dataframe against the rules
     rules.check(df)
-    ```
+```
     
 # Features
   - Succinct: Easy to add many rules to many columns
