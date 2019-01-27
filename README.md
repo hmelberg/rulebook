@@ -6,7 +6,7 @@
   - Will change, everything does not work well, use at your own risk
 
 # Usage
-    '''
+    ```python
     import rulebook as rb
     
     # create a rulebook
@@ -18,7 +18,7 @@
     
     # check the dataframe against the rules
     rules.check(df)
-    '''
+    ```
     
 # Features
   - Succinct: Easy to add many rules to many columns
@@ -28,7 +28,9 @@
   - Visualize: Get a quick visualization of amount and type of invalid data
   
 # Installation
-    '''pip install rulebook'''
+    ```python
+    pip install rulebook
+    ```
     
 # Requirements
   - Python 3.6 and above
@@ -39,10 +41,10 @@
   
 # Advanced features
   - Add complex rule expressions (pandas expressions)
-      '''
+      
       # All observations with the same id should also have the same gender
       rules.add("df.groupby('id')['gender'].nunique()<2")
-      '''  
+        
   - Rules for revising invalid data
       # Make all values that are invalid, missing
       rules.add("isin('m', 'f')", cols='gender', invalid='to_missing')
