@@ -41,8 +41,9 @@
   - Add complex rule expressions (pandas expressions) 
 ```python 
     # All observations with the same id should also have the same gender
-         rules.add("df.groupby('id')['gender'].nunique()<2")```        
-  - Rules for revising invalid data 
+         rules.add("df.groupby('id')['gender'].nunique()<2")
+```        
+  - Add rules for revising invalid observations (including self-defined rules) 
 ```python 
     # Make all values that are invalid, missing
         rules.add("isin('m', 'f')", cols='gender', invalid='to_missing')
