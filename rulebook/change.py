@@ -17,7 +17,7 @@ def to_nan(df, col=None, ok=None):
    return df
 
 
-def insert(df, col=None, , ok=None, value):
+def insert(df, col=None, ok=None, value=None):
    """
    replaces invalid observations with a user defined value (num or string)
    """
