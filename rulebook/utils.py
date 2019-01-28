@@ -2,6 +2,9 @@ import pickle
 import re
 import pandas as pd
 
+from rulebook.core import OneRule
+
+
 def load_rulebook(file):
    with open(file, 'rb') as input:
        rb = pickle.load(input)

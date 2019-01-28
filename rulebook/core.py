@@ -2,13 +2,14 @@
 """
 Created on Sun Oct 14 23:31:49 2018
 
-@author: hmelberg_adm
+@author: hmelberg
 """
 
 import copy
 import pickle
 
-from rulebook.utils import *
+#from rulebook.utils import *
+from rulebook.utils import _listify, _expand_rulelist, _eval2cols, _expand_rules, _find_type, _insert_eval, _make_dict, _visualize,load_rulebook,suggest_rulebook
 
 
 class OneRule():
