@@ -1,14 +1,7 @@
-import pickle
 import re
 import pandas as pd
 
-from rulebook.core import OneRule
 
-
-def load_rulebook(file):
-   with open(file, 'rb') as input:
-       rb = pickle.load(input)
-   return rb
 
 
 def _find_type(rule):
@@ -57,7 +50,7 @@ def _expand_rulelist(rulelist):
 
    expanded_rules = []
    for rule in rulelist:
-       rules = group2rules(rule)
+       rules = _group2rules(rule)
 
        expanded_rules.extend(rules)
 
@@ -74,7 +67,7 @@ def _expand_rules(book):
 
    expanded_rules = []
    for rule in book.rulebook_list:
-       rules = group2rules(rule)
+       rules = _group2rules(rule)
 
        expanded_rules.extend(rules)
 
@@ -147,116 +140,7 @@ def _eval2cols(rule, df):
    return list(cols)
 
 
-def suggest_rulebook(df, rules=None, cols=None, sample=0.1, pid='pid', threshold=0.1):
-   """
-   Suggest a rule book when almost all of the results conform to a rule
-   """
-   rule_col = {}
-   # df = df.sample(sample)
-
-   all_cols = list(df.columns)
-   # rb = RuleBook()
-
-   # first find dtypes
-   dtypes = df.dtypes.apply(lambda x: x.name).to_dict()
-
-   num_cols = list(df.select_dtypes(include='number').columns)
-   obj_cols = list(df.select_dtypes(include='object').columns)
-   date_cols = list(df.select_dtypes(include='datetime').columns)
-   cat_cols = list(df.select_dtypes(include='category').columns)
-   int_cols = list(df.select_dtypes(include='int').columns)
-   float_cols = list(df.select_dtypes(include='float').columns)
-   bool_cols = list(df.select_dtypes(include='bool').columns)
-   # delta_cols
-   # other_cols
-   # mixed_cols
-
-   for col in all_cols:
-       rule_col[col] = [f'dtype_{dtypes[col]}']
-
-   # find datecols
-   # df.infer_objects().dtypes
-   dtype = {col: [] for col in all_cols}
-   obs = df.head(1000)
-
-   obj_cat_cols = obj_cols + cat_cols
-
-   for col in obj_cat_cols:
-
-       ser = obs[col].dropna()
-
-       if ser.empty or all(ser == ' '):
-           continue
-
-       print(col)
-       ok = pd.to_numeric(ser, errors='coerce')
-       if ok.notnull().sum() > 500:
-           rule_col[col].append('dtype_num')
-
-       ok = pd.to_datetime(ser.dropna().head(1000), errors='coerce')
-       if ok.notnull().sum() > 500:
-           dtype[col] = 'date'
-           rule_col[col].append('dtype_date')
-
-       uniques = ser.nunique()
-       print(col, uniques)
-       if uniques:
-           if len(obs) / uniques > 3:
-               dtype[col] = 'category'
-               rule_col[col].append('dtype_category')  # and delete if existing is rule that says object
-
-       if pid:
-           ok = (obs.groupby(pid)[col].nunique() == 1)
-           if ok.sum() > 0.95 * obs[pid].nunique():
-               rule_col[col].append('stable')
-
-       if ser.nunique() > 990:
-           rule_col[col].append('unique')
-
-       len_dist = ser.str.len().value_counts()
-       # outliers out, frequency of ? relative to n, also dispersion in general? need measure here, statistics
-
-       if ser.nunique() > 990:
-           rule_col[col].append('unique')
-
-   for col in num_cols:
-       print(col)
-       ser = obs[col].dropna()
-
-       if ser.empty:
-           continue
-
-       if ser.nunique() < 3:
-           dtype[col] = 'bool'
-           rule_col[col].append('bool')
-
-       if ser.min() > 0 and ser.max() < 1:
-           rule_col[col].append('between(0,1)')
-
-       if pid:
-           ok = (obs.groupby(pid)[col].nunique() == 1)
-
-           if ok.sum() > 0.95 * obs[pid].nunique():
-               rule_col[col].append('stable')  # (maybe unique(groupby='pid'))
-
-       if col.startswith('age'):
-           rule_col[col].extend(['always_positive', "increase(groupby='pid', sort='date'), max(150)"])
-
-       if obs[col].nunique() > 995:
-           rule_col[col].append('unique')
-
-       if col == 'pid':
-           rule_col[col].append('no_missing')
-
-       if ser.sort_values().iloc[5] >= 0:
-           rule_col[col].append('is_positive')
-
-   # add special rules - examine dtypes, max, min, contains etc
-
-   return rb
-
-
-def group2rules(rule_group):
+def _group2rules(rule_group):
    group_list = []
    if rule_group.action:
        action, *action_args = rule_group.action.split('(', 1)
@@ -319,3 +203,16 @@ def group2rules(rule_group):
                                   action=action, action_args=action_args)
                group_list.append(one_rule)
    return group_list
+
+
+class OneRule():
+   def __init__(self, text, name, group, func, args=None, action=None,
+                action_args=None, etc=None):
+       self.text = text,
+       self.name = name,
+       self.group = group,
+       self.func = func,
+       self.args = args,
+       self.action = action,
+       self.action_args = action_args,
+       self.etc = etc
