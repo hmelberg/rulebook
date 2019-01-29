@@ -5,7 +5,7 @@ setup(
     version='0.0.1',
     packages=['rulebook'],
     package_dir={'': 'rulebook'},
-    url='',
+    url='https://github.com/hmelberg/rulebook',
     license='MIT',
     author='Hans Olav Melberg',
     author_email='hans.melberg@gmail.com',
