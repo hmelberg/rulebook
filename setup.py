@@ -8,5 +8,6 @@ setup(
     license='MIT',
     author='Hans Olav Melberg',
     author_email='hans.melberg@gmail.com',
-    description='Validate and revise Pandas dataframes'
+    description='Validate and revise Pandas dataframes',
+    install_requires=['pandas']
 )
