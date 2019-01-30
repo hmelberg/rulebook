@@ -136,7 +136,6 @@ class RuleBook():
             print(rule.name, rule.rules)
 
     def view_cols(self, cols=None, rules=None):
-        self._fix_format()
 
         if not rules: rules = self.rulebook_list
 
@@ -151,7 +150,7 @@ class RuleBook():
 
         for col, rules in col_rules.items():
             for rule in rules:
-                print(col, rule.name, rule.rule)
+                print(col, rule.name, rule.rules)
 
     def save(self, file):
         with open(file, 'wb') as output:
