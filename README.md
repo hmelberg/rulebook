@@ -28,7 +28,9 @@
   - Visualize: Get a quick visualization of amount and type of invalid data
   
 # Installation
-```python pip install rulebook```
+```python 
+pip install rulebook
+```
     
 # Requirements
   - Python 3.6 and above
@@ -77,7 +79,7 @@
   - rules.check_and_revise()
   - rules.save()
   - rb.load()
-  - rb.suggest_rules()
+  - rb.suggest()
   
  
     
