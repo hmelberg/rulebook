@@ -1,11 +1,11 @@
-# Rulebook
+## Rulebook
   - Validate and revise Pandas dataframes
 
-# Status
+## Status
   - alpha 
   - Will change, everything does not work well, use at your own risk
 
-# Usage
+## Usage
 ```python
     import rulebook as rb
     
@@ -20,26 +20,26 @@
     rules.check(df)
 ```
     
-# Features
+## Features
   - Succinct: Easy to add many rules to many columns
   - Flexible: Use predefined rules or add your own functions or expressions
   - Smart: Suggest rules feature save you the work of generating rules
   - Share: The rulebook can be saved and shared
   - Visualize: Get a quick visualization of amount and type of invalid data
   
-# Installation
+## Installation
 ```python 
 pip install rulebook
 ```
     
-# Requirements
+## Requirements
   - Python 3.6 and above
   - Pandas
   
-# Licence
+## Licence
   -MIT
   
-# Advanced features
+## Advanced features
   - Add complex rule expressions (pandas expressions) 
 ```python 
     # All observations with the same id should also have the same gender
@@ -53,7 +53,7 @@ pip install rulebook
         revised_df = rules.check_and_revise(df)
  ```  
 
-# General structure
+## General structure
   - There are three types of rules that can be added:
     - Expressions
       - Simple: rules.add('age>25')
@@ -66,11 +66,18 @@ pip install rulebook
       - Series: rules.add("name.str.contains('Cathy')")
       - Dataframe:       
  ```python
-      # For each persons age should never decrease as the date increases
-       rules.add("df.sort_values(['id', 'age']).groupby('id')['age'].is_monotonic")
-   ```
-     
- # API info
+          # For each persons age should never decrease as the date increases
+          rules.add("df.sort_values(['id', 'age']).groupby('id')['age'].is_monotonic")
+ ```
+ 
+ ## See also
+- [Engarde](https://github.com/TomAugspurger/engarde)
+- [assertr](https://github.com/tonyfischetti/assertr)
+- [Validada](https://github.com/jnmclarty/validada)
+- [Validate (R)](https://cran.r-project.org/web/packages/validate/vignettes/introduction.html)
+- [PandasSchema](https://github.com/TMiguelT/PandasSchema)
+ 
+ ## API info
   - rules=rb.RuleBook()
   - rules.add()
   - rules.delete()
