@@ -23,8 +23,8 @@
 # Features
   - Succinct: Easy to add many rules to many columns
   - Flexible: Use predefined rules or add your own functions or expressions
-  - Smart: A method to suggest rules save you work of generating rules
-  - Sharable: The rulebook can be saved and shared
+  - Smart: Suggest rules feature save you the work of generating rules
+  - Share: The rulebook can be saved and shared
   - Visualize: Get a quick visualization of amount and type of invalid data
   
 # Installation
