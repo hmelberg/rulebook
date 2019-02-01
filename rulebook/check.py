@@ -10,9 +10,11 @@ def stable(df, col, pid='pid'):
     ok = df.groupby(pid)[col].nunique() < 2
     return ok
 
-def between(df,col, lower, upper):
-    ok = (df[col]>=lower & df[col]<=upper)
+
+def between(df, col, lower, upper):
+    ok = (df[col] >= lower & df[col] <= upper)
     return ok
+
 
 def one_of(df, col, values=None, sep=None):
     """
@@ -21,12 +23,13 @@ def one_of(df, col, values=None, sep=None):
     returns a boolean series with zero for rows in the column not listed in values
     """
     if sep:
-        expanded_df=df[col].str.split(sep=sep, expand=True)
-        ok=expanded_df.isin(values).all(axis=1)
+        expanded_df = df[col].str.split(sep=sep, expand=True)
+        ok = expanded_df.isin(values).all(axis=1)
     else:
 
         ok = df[col].isin(values)
     return ok
+
 
 def contains(df, col, text, case=True, flags=int, na=True, regex=True):
     """
@@ -35,10 +38,12 @@ def contains(df, col, text, case=True, flags=int, na=True, regex=True):
     ok = df[col].str.contains(text, case=case, flags=flags, na=na, regex=regex)  # note na true, discuss!
     return ok
 
+
 def not_contain(df, col, text, case=True, flags=int, na=True, regex=True):
     not_ok = df[col].str.contains(text, case=case, flags=flags, na=na, regex=regex)
     ok = ~ not_ok
     return ok
+
 
 def evaluate(df, col=None, expr=None):
     """
@@ -49,24 +54,24 @@ def evaluate(df, col=None, expr=None):
     """
     all_cols = set(df.columns)
     if expr.startswith("df.") or expr.startswith('df['):
-       if col:
-           expr = expr.replace("[col]", f"['{col}']")  # maybe require @col?
+        if col:
+            expr = expr.replace("[col]", f"['{col}']")  # maybe require @col?
 
-       all_words = set(re.findall(r'\w+', expr))
-       # exclude_words = {'not', 'and', 'or'}
-       included_cols = list(all_cols.intersection(all_words))
+        all_words = set(re.findall(r'\w+', expr))
+        # exclude_words = {'not', 'and', 'or'}
+        included_cols = list(all_cols.intersection(all_words))
 
-       nans = df[included_cols].isnull().any(axis=1)
-       # nan_evals = [f"({col}!={col})" for col in included_cols]
-       # nan_evals = ' or '.join(nan_evals)
-       # print(nan_evals)
-       # nans = df.eval(nan_evals)
-       # nans = df.eval(nan_evals)
+        nans = df[included_cols].isnull().any(axis=1)
+        # nan_evals = [f"({col}!={col})" for col in included_cols]
+        # nan_evals = ' or '.join(nan_evals)
+        # print(nan_evals)
+        # nans = df.eval(nan_evals)
+        # nans = df.eval(nan_evals)
 
-       ok = pd.eval(expr=expr, engine='python')
-       ok_wo_nan = (ok | nans)
+        ok = pd.eval(expr=expr, engine='python')
+        ok_wo_nan = (ok | nans)
     else:
-       ok_wo_nan = df.eval(expr=expr)
+        ok_wo_nan = df.eval(expr=expr)
     return ok_wo_nan
 
 
@@ -90,40 +95,63 @@ def length(df, col=None, equal=None, minimum=None, maximum=None):
 
     return ok
 
+
 def upper_case(df, col=None):
-   ok = df[col].str.isupper()
-   return ok
+    ok = df[col].str.isupper()
+    return ok
+
 
 def lower_case(df, col=None):
-   ok = df[col].str.islower()
-   return ok
+    ok = df[col].str.islower()
+    return ok
 
 
 def no_missing(df, col):
-   missing = df[col].isnull()
-   missing = df[missing]
-   return missing
+    missing = df[col].isnull()
+    missing = df[missing]
+    return missing
+
 
 # hmm these do not return a series, but a scalar
 
+def dtype_int(df, col):
+    ok = 'int' in df[col].dtype
+    return ok
+
+def dtype_float(df, col):
+    ok = 'float' in df[col].dtype
+    return ok
+
+def dtype_bool(df, col):
+    ok = 'bool' in df[col].dtype
+    return ok
+
+def dtype_category(df, col):
+    ok = 'category' in df[col].dtype
+    return ok
+
+def dtype_check(df, col, value):
+    ok = value in df[col].dtype
+    return ok
+
 def is_int(df, col):
-   id_int = df[col].apply(float.is_integer)
-   not_int = df[not is_int]
-   return not_int
+    id_int = df[col].apply(float.is_integer)
+    not_int = df[not is_int]
+    return not_int
 
 def never_decrease(df, col, sortby=None):
-   sub = df
-   if sort:
-       sub = sub[col].sort_values(sort)
-   mono = df.groupby(pid)[col].apply(x.is_monotonically)
-   not_mono = df[~mono]
-   return not_mono
+    sub = df
+    if sort:
+        sub = sub[col].sort_values(sort)
+    mono = df.groupby(pid)[col].apply(x.is_monotonically)
+    not_mono = df[~mono]
+    return not_mono
+
 
 def always_increase(df, col, sortby=None):
-   sub = df
-   if sort:
-       sub = sub[col].sort_values(sort)
-   mono = df.groupby(pid)[col].apply(x.is_monotonically)
-   mono = df[mono]
-   return mono
-
+    sub = df
+    if sort:
+        sub = sub[col].sort_values(sort)
+    mono = df.groupby(pid)[col].apply(x.is_monotonically)
+    mono = df[mono]
+    return mono

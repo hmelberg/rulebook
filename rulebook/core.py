@@ -31,8 +31,10 @@ class RuleGroup():
 class RuleBook():
     def __init__(self, rules=None):
         self.rulebook_list = list()
-        self.comments = None,
-        self.info = None,
+        self.comments = None
+        self.info = None
+        self.result =None
+        return
 
     def add(self, rules, cols=None, name=None, description=None,
             action=None, comments=None, etc=None):
@@ -81,12 +83,13 @@ class RuleBook():
         # convert col to list if it is a string with , inside
         if rule_group.cols:
             if ',' in rule_group.cols:
-                cols = rule.cols.split(',')
-                cols = [strip(col) for col in cols]
+                cols = rule_group.cols.split(',')
+                cols = [col.strip() for col in cols]
                 rule_group.cols = cols
 
         setattr(self, rule_group.name, rule_group)
         self.rulebook_list.append(rule_group)
+        return
 
     def add_many(self, rules):
         """
@@ -104,36 +107,36 @@ class RuleBook():
             rules = rules.split(',')
         for rule in rules:
             self.add(rule=rule)
+        return
 
     def delete(self, rules):
         if isinstance(rules, str): rules = set([rules])
         keep_rules = [rule for rule in self.rules if rule.name not in rules]
         self.rules = keep_rules
+        return
 
     def append_col(self, name, cols):
-        cols = listify_cols
-        modified_rules = []
-        for rule in self.rulebook_list:  # rulebook_lilst should be private  .. and called sth else
+        cols = _listify(cols)
+        for rule in self.rulebook_list:  # rulebook_list should be private  .. and called sth else
             if rule.name == name:
                 rule.cols.extend(cols)
-            modified_rules.append(rule)
-        return modified_rules
+        return
 
     def drop_col(self, name, cols):
-        cols = listify_cols
+        cols = _listify(cols)
         modified_rules = []
-        for rule in self.rulebook_list:  # rulebook_lilst should be private  .. and called sth else
+        for rule in self.rulebook_list:  # rulebook_list should be private  .. and called sth else
             if rule.name == name:
                 existing_cols = rule.cols
                 keep_cols = existing_cols - set(cols)
                 rule.cols = keep_cols
-            modified_rules.append(rule)
-        return modified_rules
+        return
 
     def view(self, rules=None):
         if not rules: rules = self.rulebook_list
         for rule in rules:
             print(rule.name, rule.rules)
+        return
 
     def view_cols(self, cols=None, rules=None):
 
@@ -156,6 +159,7 @@ class RuleBook():
         with open(file, 'wb') as output:
             pickle.dump(self, output, protocol=0)
             # pickle.HIGHEST_PROTOCOL
+        return
 
     def _check(self, df, rules=None, cols=None, change=False, out='report'):
 
@@ -200,17 +204,17 @@ class RuleBook():
 
                 result[name] = dict()
                 result[name]['ok'] = ok
-                result[name]['nans'] = df[col].isnull().sum()
-                result[name]['ninvalid'] = (~ok).sum()
-                result[name]['values'] = df[col][~ok].values
+                result[name]['n_missing'] = df[col].isnull().sum()
+                result[name]['n_invalid'] = (~ok).sum()
+                result[name]['invalid'] = df[col][~ok].values
                 result[name]['series'] = df[col][~ok]
                 result[name]['df'] = df[~ok]
             else:
                 result[rule.name] = dict()
 
                 result[name]['ok'] = ok
-                result[name]['nans'] = ok.isnull().sum()
-                result[name]['ninvalid'] = (~ok).sum()
+                result[name]['n_missing'] = ok.isnull().sum()
+                result[name]['n_invalid'] = (~ok).sum()
                 result[name]['df'] = df[~ok]
 
             # change the column(s)
@@ -221,14 +225,20 @@ class RuleBook():
                     print(f"Error for rule {rule.name, rule.text}")
 
         if out == 'report':
+            print('Rule name', 'Invalid (n)', 'Missing (n)')
             for name, res in result.items():
-                print(name, res['ninvalid'], res['nans'])
+                print(name, res['n_invalid'], res['n_missing'])
             return
             # return fails
 
+        elif out == 'object':
+            self.result = result
+            # return fails
+
         elif out == 'results':
+            print('Rule name', 'Invalid (n)', 'Missing (n)')
             for name, res in result.items():
-                print(name, res['ninvalid'], res['nans'])
+                print(name, res['n_invalid'], res['n_missing'])
             return result
 
         elif out == 'change':
@@ -256,13 +266,13 @@ class RuleBook():
         return changed_df, df_with_fails_before, df_with_fails_after
 
 
-def load_rulebook(file):
+def load(file):
     with open(file, 'rb') as input:
         rb = pickle.load(input)
     return rb
 
 
-def suggest_rules(df, rules=None, cols=None, sample=0.1, pid='pid', threshold=0.1):
+def suggest(df, rules=None, cols=None, sample=0.1, pid='pid', threshold=0.1):
     """
     Suggest a rule book when almost all of the results conform to a rule
     """
