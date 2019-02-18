@@ -83,11 +83,10 @@ pip install rulebook
   - rules.add()
   - rules.delete()
   - rules.view()
+  - rules.save()
+  - rules.suggest()
   - rules.check()
   - rules.check_and_revise()
-  - rules.save()
-  - rb.load()
-  - rb.suggest()
   
  
     
