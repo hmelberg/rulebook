@@ -56,14 +56,14 @@ pip install rulebook
 ## General structure
   - There are three types of rules that can be added:
     - Expressions
-      - Simple: rules.add('age>25')
-      - Logical: No pregnant men: rules.add("not (gender=='m' and icd=='O82)")
+      - Simple: ```rules.add('age>25')```
+      - Logical: ```No pregnant men: rules.add("not (gender=='m' and icd=='O82)")```
     - Functions
-      - Pre-defined: rules.add(['never_negative', 'never_missing'], cols=['id', 'age'])
-      - Self-defined: rules.add('THE_NAME_OF_YOUR_FUNCTION') 
+      - Pre-defined: ```rules.add(['never_negative', 'never_missing'], cols=['id', 'age'])```
+      - Self-defined: ```rules.add('THE_NAME_OF_YOUR_FUNCTION')``` 
           Define a function that takes a dataframe (and possibly a column) and returns a series that is True or False. The name of the function can be added as a rule:
     - Pandas expressions
-      - Series: rules.add("name.str.contains('Cathy')")
+      - Series: ```rules.add("name.str.contains('Cathy')")```
       - Dataframe:       
  ```python
           # For each persons age should never decrease as the date increases
@@ -76,6 +76,7 @@ pip install rulebook
 - [Validada](https://github.com/jnmclarty/validada)
 - [Validate (R)](https://cran.r-project.org/web/packages/validate/vignettes/introduction.html)
 - [PandasSchema](https://github.com/TMiguelT/PandasSchema)
+- [Great Expectations](https://github.com/great-expectations/great_expectations)
  
  ## API info
   - rules=rb.RuleBook()
