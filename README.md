@@ -24,7 +24,7 @@
   - Succinct: Easy to add many rules to many columns
   - Flexible: Use predefined rules or add your own functions or expressions
   - Smart: Suggest rules feature save you the work of generating rules
-  - Share: The rulebook can be saved and shared
+  - Share: The rulebook, including self-defined functions, can be saved and shared
   - Visualize: Get a quick visualization of amount and type of invalid data
   
 ## Installation
@@ -57,7 +57,7 @@ pip install rulebook
   - There are three types of rules that can be added:
     - Expressions
       - Simple: ```rules.add('age>25')```
-      - Logical: ```No pregnant men: rules.add("not (gender=='m' and icd=='O82)")```
+      - Logical: No pregnant men: ```rules.add("not (gender=='m' and icd=='O82)")```
     - Functions
       - Pre-defined: ```rules.add(['never_negative', 'never_missing'], cols=['id', 'age'])```
       - Self-defined: ```rules.add('THE_NAME_OF_YOUR_FUNCTION')``` 
