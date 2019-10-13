@@ -33,7 +33,7 @@ class RuleBook():
         self.rulebook_list = list()
         self.comments = None
         self.info = None
-        self.result =None
+        self.result = None
         return
 
     def add(self, rules, cols=None, name=None, description=None,
@@ -71,7 +71,7 @@ class RuleBook():
 
             if proposed_name in existing_names:
                 existing_nums = [int(name.split('_')[1]) for name in existing_names if
-                                 'rule_' in name]  # potentialproblem a name such as rule_no_negative
+                                 'rule_' in name]  # potential problem a name such as rule_no_negative
                 max_num = max(existing_nums)
                 proposed_name = 'rule_' + str(max_num + 1)
             rule_group.name = proposed_name
@@ -132,28 +132,57 @@ class RuleBook():
                 rule.cols = keep_cols
         return
 
-    def view(self, rules=None):
-        if not rules: rules = self.rulebook_list
-        for rule in rules:
-            print(rule.name, rule.rules)
-        return
+    def view(self, rules=None, cols=None, sortby='rules'):
+        """
+        Prints an overview of the rules in the rulebook object
 
-    def view_cols(self, cols=None, rules=None):
+        Args:
+            rules (list of str): List of rule names to be printed. If none, prints all
+            cols (list of str): List of column names to be printed sorted by columns. If none, prints all
+            sortby (str): if 'rules' (default), prints rules. If "cols', prints the columns and their associated rules
 
-        if not rules: rules = self.rulebook_list
+        Returns:
+            None
 
-        col_rules = {}
-        for rule in rules:
-            for col in rule.cols:
-                if (not cols) or (cols in rule.cols):
-                    if col in col_rules:
-                        col_rules[col].append(rule)
-                    else:
-                        col_rules[col] = [rule]
+        """
+        if not rules:
+            rules = self.rulebook_list
 
-        for col, rules in col_rules.items():
+        # print rules and associated columns
+        if sortby =='rules':
+            print('Name', 'Rule', 'Columns')
+            print('----', '----', '-------')
             for rule in rules:
-                print(col, rule.name, rule.rules)
+                print(rule.name, rule.rules, rule.cols)
+
+        # print columns and associated rules
+        elif sortby == 'cols':
+            # determine which rules apply to each column
+            col_rules = {}
+            for rule in rules:
+                for col in rule.cols:
+                    if (not cols) or (cols in rule.cols):
+                        if col in col_rules:
+                            col_rules[col].append(rule)
+                        else:
+                            col_rules[col] = [rule]
+
+            # prints overview, organised by columns
+            for col, rules in col_rules.items():
+                print('Columns', 'Name', 'Rule')
+                print('-------', '----', '----')
+
+                for rule in rules:
+                    print(col, rule.name, rule.rules)
+        else:
+            print(f'Error. {sortby} is not a valid sortby argument')
+    return
+
+    def plot(self):
+        #name, n_invalid, n_missing
+        result_tuple = [(name, len(res['ok']-res['n_invalid'], res['n_invalid'], res['n_missing']) for name, res in self.result.items()]
+        result_df = pd.DataFrame(result_tuple, columns=['name', 'valid', 'invalid', 'missing']).set_index('name')
+        return result_df.plot.barh(stacked=True)
 
     def save(self, file):
         with open(file, 'wb') as output:
@@ -198,6 +227,7 @@ class RuleBook():
         for rule in expanded_rules:
             ok = globals()[rule.func[0]](df=df, **rule.args[0])  # hmmm why are these tuples?)
 
+            # if the rule is about a column
             if rule.args[0]['col']:
                 col = rule.args[0]['col']
                 name = f"{rule.name}_col{col}"
@@ -208,14 +238,16 @@ class RuleBook():
                 result[name]['n_invalid'] = (~ok).sum()
                 result[name]['invalid'] = df[col][~ok].values
                 result[name]['series'] = df[col][~ok]
-                result[name]['df'] = df[~ok]
+                #result[name]['df'] = df[~ok]
+
+            # if the rule is a general dataframe rule
             else:
                 result[rule.name] = dict()
 
                 result[name]['ok'] = ok
                 result[name]['n_missing'] = ok.isnull().sum()
                 result[name]['n_invalid'] = (~ok).sum()
-                result[name]['df'] = df[~ok]
+                #result[name]['df'] = df[~ok]
 
             # change the column(s)
             if change and rule.action:
@@ -251,7 +283,21 @@ class RuleBook():
             print('out argument is wrong')
         return
 
-    def check(self, df, rules=None, cols=None):
+    def check(self, df, rules=None, cols=None, out='report'):
+        """
+        Check whether the dataframe conforms to the rules
+
+        Args:
+            df (DataFrame): The dataframe to be checked
+            rules (str of list of str): The name of the rules to be used. If None (default), uses all rules
+            cols: (str of list of str): A cols or list of columns to be tested. If None (default), use all columns in the rulebook
+
+        Returns:
+            The return depends on the 'out' argument.
+                If 'report' : Prints the number of valid/missing/invalid values for each rule
+
+
+        """
         results_out = self._check(df=df, rules=rules, cols=cols, out='report')
         return results_out
 
@@ -264,6 +310,23 @@ class RuleBook():
         changed_df = self._check(df=df, rules=rules, cols=cols, out='change')
         df_with_fails_after = self._check(df=changed_df, rules=rules, cols=cols)
         return changed_df, df_with_fails_before, df_with_fails_after
+
+    def _single_get(self, what='ok', name=None, rule=None, col=None, merge=False):
+        all_names = self.results.keys()
+        if name:
+            include = [a_name for a_name in all_names if name in a_name] #startswith
+        if rule:
+            include = [a_name for a_name in all_names if ('_@rule_split@_'+ rule) in include]
+        if cols:
+            include = [a_name for a_name in all_names if ('_@col_split@_'+ col) in include]
+        if include in self.results:
+            return self.results[include[0]][what]
+        else:
+            print(f'Error. No {include[0]} in results')
+
+
+
+
 
 
 def load(file):

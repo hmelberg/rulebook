@@ -196,9 +196,10 @@ def _group2rules(rule_group):
     groupname = rule_group.name
 
     for n, rule in enumerate(rule_group.rules):
-        subname = f'{rule_group.name}_sub_{n}'
-        new_rule = _insert_eval(
-            rule)  # allow eval also in action functions? maybe not? or maybe ok, like df.age.replace(...)
+        #subname = f'{rule_group.name}_sub_{n}'
+        subname = f'{rule_group.name}_@rule_split@_{rule}' # ok, not perfect ...
+
+        new_rule = _insert_eval(rule)  # allow eval also in action functions? maybe not? or maybe ok, like df.age.replace(...)
         func, *args = new_rule.split('(', 1)
         if args:
             args = args[0].strip(')')
@@ -213,7 +214,7 @@ def _group2rules(rule_group):
                     nargs = f"col='{col}'"
                 nargs = _make_dict(nargs)
 
-                subname = f'{rule_group.name}_sub_{n}_col_{col}'
+                subname = subname+f'_@col_split@_{col}'
 
                 if rule_group.action:
                     if action_args:
